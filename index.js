@@ -41,19 +41,19 @@ ejsBuilder.prototype.apply = function(compiler) {
 			}
 
 			if (compileOptions.sourceName.length > 0) {
-				var sourceFile = fs.readFileSync(path.join(compileOptions.sourceDir, compileOptions.sourceName), { encoding: compileOptions.encoding });
-				var targetFile = ejs.render(sourceFile, compileOptions.parameters);
-				var targetFileName = (compileOptions.targetName.length > 0)
-					? (compileOptions.targetDir + compileOptions.targetName)
-				 	: compileOptions.sourceName.replace('.ejs','.html');
-				compilation.assets[targetFileName] = {
-					source: function() {
-						return targetFile;
-					},
-					size: function () {
-						return targetFile.length;
-					}
-				};
+				var targetFile = ejs.renderFile(path.join(compileOptions.sourceDir, compileOptions.sourceName), compileOptions.parameters, function(err, result){
+					var targetFileName = (compileOptions.targetName.length > 0)
+						? (compileOptions.targetDir + compileOptions.targetName)
+						: compileOptions.sourceName.replace('.ejs','.html');
+					compilation.assets[targetFileName] = {
+						source: function() {
+							return result;
+						},
+						size: function () {
+							return result.length;
+						}
+					};
+				});
 			}
 		});
 
